@@ -17,27 +17,15 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
-
+    if (password !== confirmPassword) { toast.error('Passwords do not match'); return; }
+    if (password.length < 6) { toast.error('Password must be at least 6 characters'); return; }
     setLoading(true);
-
     try {
       const response = await api.post('/auth/register', { username, email, password });
       const { token, username: userName, role } = response.data;
-
       localStorage.setItem('token', token);
       localStorage.setItem('username', userName);
       localStorage.setItem('role', role);
-
       toast.success('Registration successful');
       router.push('/');
     } catch (error) {
@@ -48,103 +36,74 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <div className="card">
-        <div className="text-center mb-8">
-          <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <UserPlus className="h-8 w-8 text-green-600" />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '5rem 1rem 2rem',
+      background: 'var(--bg)'
+    }}>
+      <div className="card" style={{ width: '100%', maxWidth: '360px', padding: '1.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <div style={{
+            width: '3rem', height: '3rem', borderRadius: '50%',
+            background: 'color-mix(in srgb, #10b981 15%, transparent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 0.75rem'
+          }}>
+            <UserPlus size={20} color="#10b981" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-600">Join EventSync today</p>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.2rem' }}>
+            Create Account
+          </h1>
+          <p style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>Join EventSync today</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Username
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Choose a username"
-                required
-              />
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+          {[
+            { label: 'Username', icon: User, type: 'text', value: username, onChange: setUsername, placeholder: 'Choose a username' },
+            { label: 'Email', icon: Mail, type: 'email', value: email, onChange: setEmail, placeholder: 'your@email.com' },
+            { label: 'Password', icon: Lock, type: 'password', value: password, onChange: setPassword, placeholder: 'Min 6 characters' },
+            { label: 'Confirm Password', icon: Lock, type: 'password', value: confirmPassword, onChange: setConfirmPassword, placeholder: 'Confirm your password' },
+          ].map(({ label, icon: Icon, type, value, onChange, placeholder }) => (
+            <div key={label}>
+              <label style={{ fontSize: '0.8rem' }}>{label}</label>
+              <div style={{ position: 'relative' }}>
+                <Icon size={15} style={{
+                  position: 'absolute', left: '0.75rem',
+                  top: '50%', transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)', pointerEvents: 'none'
+                }} />
+                <input
+                  type={type}
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  placeholder={placeholder}
+                  required
+                  style={{ paddingLeft: '2.25rem', padding: '0.6rem 0.75rem 0.6rem 2.25rem', fontSize: '0.85rem' }}
+                />
+              </div>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="your@email.com"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Min 6 characters"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Confirm Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Confirm your password"
-                required
-              />
-            </div>
-          </div>
+          ))}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-2 flex items-center justify-center space-x-2"
+            className="btn-primary"
+            style={{ width: '100%', justifyContent: 'center', marginTop: '0.25rem', opacity: loading ? 0.7 : 1, fontSize: '0.875rem', padding: '0.65rem 1rem' }}
           >
-            <CheckCircle className="h-4 w-4" />
-            <span>{loading ? 'Creating account...' : 'Register'}</span>
+            <CheckCircle size={15} />
+            {loading ? 'Creating account...' : 'Register'}
           </button>
         </form>
 
-        <div className="mt-4 text-center">
-          <p className="text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-              Sign in
-            </Link>
-          </p>
-        </div>
+        <p style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--text-light)', fontSize: '0.8rem' }}>
+          Already have an account?{' '}
+          <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

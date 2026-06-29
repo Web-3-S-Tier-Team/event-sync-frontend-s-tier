@@ -10,9 +10,7 @@ export default function SpeakersPage() {
   const [speakers, setSpeakers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchSpeakers();
-  }, []);
+  useEffect(() => { fetchSpeakers(); }, []);
 
   const fetchSpeakers = async () => {
     try {
@@ -27,67 +25,93 @@ export default function SpeakersPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{
+          width: '2.5rem', height: '2.5rem',
+          border: '2px solid var(--primary)',
+          borderTopColor: 'transparent',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite'
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-          Featured Speakers
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Meet our expert speakers and industry leaders
-        </p>
-      </div>
+    <div style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
+      <div className="container-custom">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {speakers.map((speaker) => (
-          <Link key={speaker.id} href={`/speakers/${speaker.id}`}>
-            <div className="card hover:shadow-xl transition-all cursor-pointer group">
-              <div className="flex items-center space-x-4 mb-4">
-                {speaker.profilePhoto ? (
-                  <img
-                    src={speaker.profilePhoto}
-                    alt={speaker.fullName}
-                    className="w-20 h-20 rounded-full object-cover group-hover:scale-105 transition"
-                  />
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                    <User className="h-10 w-10 text-blue-500" />
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.5rem' }}>
+            Featured Speakers
+          </h1>
+          <div className="divider" />
+          <p style={{ color: 'var(--text-light)', marginTop: '0.75rem' }}>
+            Meet our expert speakers and industry leaders
+          </p>
+        </div>
+
+        {speakers.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+            <Users size={48} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
+            <p style={{ color: 'var(--text-muted)' }}>No speakers available at the moment.</p>
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '1.5rem'
+          }}>
+            {speakers.map((speaker) => (
+              <Link key={speaker.id} href={`/speakers/${speaker.id}`} style={{ textDecoration: 'none' }}>
+                <div className="card" style={{ cursor: 'pointer', height: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                    {speaker.profilePhoto ? (
+                      <img
+                        src={speaker.profilePhoto}
+                        alt={speaker.fullName}
+                        style={{ width: '4rem', height: '4rem', borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '4rem', height: '4rem', borderRadius: '50%',
+                        background: 'color-mix(in srgb, var(--primary) 10%, transparent)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                      }}>
+                        <User size={24} color="var(--primary)" />
+                      </div>
+                    )}
+                    <div>
+                      <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.25rem' }}>
+                        {speaker.fullName}
+                      </h2>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                        <Award size={12} color="var(--warning)" />
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Featured Speaker</span>
+                      </div>
+                    </div>
                   </div>
-                )}
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition">
-                    {speaker.fullName}
-                  </h2>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Award className="h-3 w-3 text-yellow-500" />
-                    <span className="text-xs text-gray-500">Featured Speaker</span>
+
+                  <p style={{
+                    color: 'var(--text-light)', fontSize: '0.875rem',
+                    marginBottom: '0.75rem', lineHeight: 1.5,
+                    overflow: 'hidden', display: '-webkit-box',
+                    WebkitLineClamp: 3, WebkitBoxOrient: 'vertical'
+                  }}>
+                    {speaker.biography}
+                  </p>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                    <Calendar size={14} />
+                    <span>{speaker.sessions?.length || 0} Sessions</span>
                   </div>
                 </div>
-              </div>
-              <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                {speaker.biography}
-              </p>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Calendar className="h-4 w-4" />
-                <span>{speaker.sessions?.length || 0} Sessions</span>
-              </div>
-            </div>
-          </Link>
-        ))}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
-
-      {speakers.length === 0 && (
-        <div className="text-center py-12">
-          <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No speakers available at the moment.</p>
-        </div>
-      )}
     </div>
   );
 }

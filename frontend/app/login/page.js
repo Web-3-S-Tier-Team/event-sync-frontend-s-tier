@@ -16,15 +16,12 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const response = await api.post('/auth/login', { username, password });
       const { token, username: userName, role } = response.data;
-      
       localStorage.setItem('token', token);
       localStorage.setItem('username', userName);
       localStorage.setItem('role', role);
-      
       toast.success('Login successful');
       router.push('/');
     } catch (error) {
@@ -35,75 +32,87 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center pt-16">
-      <div className="max-w-md w-full mx-4">
-        <div className="card">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-[var(--primary)]/10 flex items-center justify-center mx-auto mb-4">
-              <LogIn className="h-8 w-8 text-[var(--primary)]" />
-            </div>
-            <h1 className="text-2xl font-bold text-[var(--text)]">Welcome Back</h1>
-            <p className="text-[var(--text-light)] text-sm mt-1">Sign in to your account</p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '5rem 1rem 2rem',
+      background: 'var(--bg)'
+    }}>
+      <div className="card" style={{ width: '100%', maxWidth: '360px', padding: '1.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <div style={{
+            width: '3rem', height: '3rem', borderRadius: '50%',
+            background: 'color-mix(in srgb, var(--primary) 10%, transparent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 0.75rem'
+          }}>
+            <LogIn size={20} color="var(--primary)" />
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="text-sm font-medium text-[var(--text-light)] mb-1 block">Username</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] focus:outline-none focus:border-[var(--primary)] transition"
-                  placeholder="Enter your username"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-[var(--text-light)] mb-1 block">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] focus:outline-none focus:border-[var(--primary)] transition"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full btn-primary flex items-center justify-center gap-2 py-2.5"
-            >
-              <KeyRound className="h-4 w-4" />
-              <span>{loading ? 'Signing in...' : 'Sign In'}</span>
-            </button>
-          </form>
-
-          <div className="mt-6 p-4 rounded-lg bg-[var(--surface-alt)]">
-            <p className="text-sm text-center text-[var(--text-light)]">
-              <span className="font-semibold">Demo credentials:</span><br />
-              Username: <span className="font-mono text-[var(--primary)]">admin</span><br />
-              Password: <span className="font-mono text-[var(--primary)]">admin123</span>
-            </p>
-          </div>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-[var(--text-light)]">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-[var(--primary)] hover:underline font-medium">
-                Register here
-              </Link>
-            </p>
-          </div>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.2rem' }}>
+            Welcome Back
+          </h1>
+          <p style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>Sign in to your account</p>
         </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+          {[
+            { label: 'Username', icon: User, type: 'text', value: username, onChange: setUsername, placeholder: 'Enter your username' },
+            { label: 'Password', icon: Lock, type: 'password', value: password, onChange: setPassword, placeholder: 'Enter your password' },
+          ].map(({ label, icon: Icon, type, value, onChange, placeholder }) => (
+            <div key={label}>
+              <label style={{ fontSize: '0.8rem' }}>{label}</label>
+              <div style={{ position: 'relative' }}>
+                <Icon size={15} style={{
+                  position: 'absolute', left: '0.75rem',
+                  top: '50%', transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)', pointerEvents: 'none'
+                }} />
+                <input
+                  type={type}
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  placeholder={placeholder}
+                  required
+                  style={{ paddingLeft: '2.25rem', padding: '0.6rem 0.75rem 0.6rem 2.25rem', fontSize: '0.85rem' }}
+                />
+              </div>
+            </div>
+          ))}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary"
+            style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.7 : 1, fontSize: '0.875rem', padding: '0.65rem 1rem' }}
+          >
+            <KeyRound size={15} />
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        <div style={{
+          marginTop: '1rem',
+          padding: '0.75rem',
+          borderRadius: '0.75rem',
+          background: 'var(--surface-alt)',
+          textAlign: 'center',
+          fontSize: '0.8rem',
+          color: 'var(--text-light)',
+          lineHeight: 1.6
+        }}>
+          <span style={{ fontWeight: 600 }}>Demo credentials:</span><br />
+          Username: <span style={{ fontFamily: 'monospace', color: 'var(--primary)' }}>admin</span><br />
+          Password: <span style={{ fontFamily: 'monospace', color: 'var(--primary)' }}>admin123</span>
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--text-light)', fontSize: '0.8rem' }}>
+          Don't have an account?{' '}
+          <Link href="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );
